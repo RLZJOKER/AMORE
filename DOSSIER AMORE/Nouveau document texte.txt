@@ -1,0 +1,7 @@
+amore/
+├─ index.html
+├─ success.html
+├─ cancel.html
+├─ package.json
+└─ api/
+   └─ checkout.js
