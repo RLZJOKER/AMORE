@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Love Box – Boîtes d’Amour</title>
+
+<style>
+:root {
+  --pink: #ff4d8d;
+  --dark: #222;
+  --light: #fff;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #f6f6f6;
+  color: #333;
+}
+
+/* HEADER */
+header {
+  background: linear-gradient(135deg, #ff69b4, #ff1493);
+  color: white;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+header h1 { font-size: 3rem; margin: 0; }
+header p { font-size: 1.2rem; opacity: 0.95; }
+
+/* CONTAINER */
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 40px 20px;
+}
+
+/* INTRO */
+.intro {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.intro button {
+  margin-top: 20px;
+  padding: 15px 30px;
+  font-size: 1rem;
+  background: var(--pink);
+  border: none;
+  border-radius: 30px;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.intro button:hover {
+  transform: scale(1.05);
+}
+
+/* PRODUCTS */
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+}
+
+.product {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  transition: transform 0.3s;
+}
+
+.product:hover {
+  transform: translateY(-8px);
+}
+
+.product img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.price {
+  font-size: 1.3rem;
+  color: var(--pink);
+  font-weight: bold;
+}
+
+.product button {
+  margin-top: 15px;
+  padding: 12px 25px;
+  background: var(--pink);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+}
+
+/* CART */
+.cart {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: white;
+  padding: 15px 20px;
+  border-radius: 30px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+  cursor: pointer;
+}
+
+.cart span {
+  font-weight: bold;
+  color: var(--pink);
+}
+
+/* MODAL */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+}
+
+.modal-content button {
+  margin-top: 15px;
+  width: 100%;
+}
+
+/* FOOTER */
+footer {
+  background: #222;
+  color: white;
+  text-align: center;
+  padding: 20px;
+  margin-top: 60px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>💖 Love Box</h1>
+  <p>Des expériences romantiques livrées chaque mois</p>
+</header>
+
+<div class="cart" onclick="openCart()">
+  🛒 Panier : <span id="cart-count">0</span>
+</div>
+
+<div class="container">
+
+  <section class="intro">
+    <h2>Faites battre son cœur</h2>
+    <p>Abonnements & coffrets conçus pour raviver la flamme 🔥</p>
+    <button onclick="scrollToProducts()">Voir les box</button>
+  </section>
+
+  <section class="products" id="products">
+
+    <div class="product">
+      <img src="https://via.placeholder.com/400x300?text=Romantique">
+      <h3>Boîte Romantique</h3>
+      <p>Bougies, vin, chocolats</p>
+      <p class="price">29,99 €</p>
+      <button onclick="addToCart(29.99)">Ajouter au panier</button>
+    </div>
+
+    <div class="product">
+      <img src="https://via.placeholder.com/400x300?text=Passion">
+      <h3>Boîte Passion</h3>
+      <p>Massage & sensualité</p>
+      <p class="price">39,99 €</p>
+      <button onclick="addToCart(39.99)">Ajouter au panier</button>
+    </div>
+
+    <div class="product">
+      <img src="https://via.placeholder.com/400x300?text=Anniversaire">
+      <h3>Boîte Anniversaire</h3>
+      <p>Surprises personnalisées</p>
+      <p class="price">49,99 €</p>
+      <button onclick="addToCart(49.99)">Ajouter au panier</button>
+    </div>
+
+  </section>
+</div>
+
+<!-- MODAL PANIER -->
+<div class="modal" id="cartModal">
+  <div class="modal-content">
+    <h2>Votre panier</h2>
+    <p>Total : <strong><span id="cart-total">0</span> €</strong></p>
+    <button onclick="checkout()">Payer (Stripe)</button>
+    <button onclick="closeCart()">Fermer</button>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 Love Box — Tous droits réservés</p>
+</footer>
+
+<script>
+let cartCount = 0;
+let cartTotal = 0;
+
+function addToCart(price) {
+  cartCount++;
+  cartTotal += price;
+  document.getElementById('cart-count').textContent = cartCount;
+  document.getElementById('cart-total').textContent = cartTotal.toFixed(2);
+}
+
+function openCart() {
+  document.getElementById('cartModal').style.display = 'flex';
+}
+
+function closeCart() {
+  document.getElementById('cartModal').style.display = 'none';
+}
+
+function checkout() {
+  alert("Paiement Stripe prêt 🔥\nIl suffit de connecter ta clé API.");
+}
+
+function scrollToProducts() {
+  document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
